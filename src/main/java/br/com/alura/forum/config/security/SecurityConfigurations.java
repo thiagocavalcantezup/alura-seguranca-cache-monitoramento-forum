@@ -19,7 +19,11 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
             .antMatchers(HttpMethod.GET, "/topicos")
             .permitAll()
             .antMatchers(HttpMethod.GET, "/topicos/*")
-            .permitAll();
+            .permitAll()
+            .anyRequest()
+            .authenticated()
+            .and()
+            .formLogin();
     }
 
 }
