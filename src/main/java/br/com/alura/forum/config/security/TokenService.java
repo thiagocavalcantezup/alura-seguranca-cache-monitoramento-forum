@@ -43,4 +43,14 @@ public class TokenService {
         }
     }
 
+    public Long getUsuarioId(String authToken) {
+        return Long.valueOf(
+            Jwts.parser()
+                .setSigningKey(this.secret)
+                .parseClaimsJws(authToken)
+                .getBody()
+                .getSubject()
+        );
+    }
+
 }

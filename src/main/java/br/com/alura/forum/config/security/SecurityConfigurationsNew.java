@@ -15,10 +15,13 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 @Configuration
 public class SecurityConfigurationsNew {
-    private final TokenService tokenService;
 
-    public SecurityConfigurationsNew(TokenService tokenService) {
+    private final TokenService tokenService;
+    private final UsuarioRepository usuarioRepository;
+
+    public SecurityConfigurationsNew(TokenService tokenService, UsuarioRepository usuarioRepository) {
         this.tokenService = tokenService;
+        this.usuarioRepository = usuarioRepository;
     }
 
     @Bean
@@ -39,7 +42,7 @@ public class SecurityConfigurationsNew {
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
             .addFilterBefore(
-                new AutenticacaoViaTokenFilter(tokenService),
+                new AutenticacaoViaTokenFilter(tokenService, usuarioRepository),
                 UsernamePasswordAuthenticationFilter.class
             );
 

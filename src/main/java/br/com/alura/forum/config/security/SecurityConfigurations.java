@@ -13,17 +13,21 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import br.com.alura.forum.repository.UsuarioRepository;
+
 @EnableWebSecurity
 @Configuration
 public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
 
     private final AutenticacaoService autenticacaoService;
     private final TokenService tokenService;
+    private final UsuarioRepository usuarioRepository;
 
     public SecurityConfigurations(AutenticacaoService autenticacaoService,
-                                  TokenService tokenService) {
+                                  TokenService tokenService, UsuarioRepository usuarioRepository) {
         this.autenticacaoService = autenticacaoService;
         this.tokenService = tokenService;
+        this.usuarioRepository = usuarioRepository;
     }
 
     // Configurações de autenticação
@@ -55,7 +59,7 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
             .addFilterBefore(
-                new AutenticacaoViaTokenFilter(tokenService),
+                new AutenticacaoViaTokenFilter(tokenService, usuarioRepository),
                 UsernamePasswordAuthenticationFilter.class
             );
     }
