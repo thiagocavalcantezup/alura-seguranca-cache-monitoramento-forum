@@ -3,6 +3,7 @@ package br.com.alura.forum.config.swagger;
 import static springfox.documentation.spi.DocumentationType.SWAGGER_2;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -24,8 +25,10 @@ import org.springframework.core.env.Environment;
 import org.springframework.util.StringUtils;
 
 import br.com.alura.forum.modelo.Usuario;
+import springfox.documentation.builders.ParameterBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.schema.ModelRef;
 import springfox.documentation.spring.web.plugins.Docket;
 
 @Configuration
@@ -37,7 +40,17 @@ public class SwaggerConfigurations {
                                     .apis(RequestHandlerSelectors.basePackage("br.com.alura.forum"))
                                     .paths(PathSelectors.ant("/**"))
                                     .build()
-                                    .ignoredParameterTypes(Usuario.class);
+                                    .ignoredParameterTypes(Usuario.class)
+                                    .globalOperationParameters(
+                                        Arrays.asList(
+                                            new ParameterBuilder().name("Authorization")
+                                                                  .description("Header para JWT")
+                                                                  .modelRef(new ModelRef("string"))
+                                                                  .parameterType("header")
+                                                                  .required(false)
+                                                                  .build()
+                                        )
+                                    );
     }
 
     // FONTE:
@@ -63,6 +76,7 @@ public class SwaggerConfigurations {
         boolean shouldRegisterLinksMapping = this.shouldRegisterLinksMapping(
             webEndpointProperties, environment, basePath
         );
+
         return new WebMvcEndpointHandlerMapping(
             endpointMapping, webEndpoints, endpointMediaTypes, corsProperties.toCorsConfiguration(),
             new EndpointLinksResolver(allEndpoints, basePath), shouldRegisterLinksMapping, null
