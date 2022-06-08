@@ -31,7 +31,11 @@ public class SecurityConfigurationsNew {
             .csrf()
             .disable()
             .sessionManagement()
-            .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            .and()
+            .addFilterBefore(
+                new AutenticacaoViaTokenFilter(), UsernamePasswordAuthenticationFilter.class
+            );
 
         return http.build();
     }
