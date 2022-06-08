@@ -4,45 +4,31 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import br.com.alura.forum.repository.UsuarioRepository;
 
 @EnableWebSecurity
 @Configuration
-public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
+public class SecurityConfigurations {
 
-    private final AutenticacaoService autenticacaoService;
     private final TokenService tokenService;
     private final UsuarioRepository usuarioRepository;
 
-    public SecurityConfigurations(AutenticacaoService autenticacaoService,
-                                  TokenService tokenService, UsuarioRepository usuarioRepository) {
-        this.autenticacaoService = autenticacaoService;
+    public SecurityConfigurations(TokenService tokenService, UsuarioRepository usuarioRepository) {
         this.tokenService = tokenService;
         this.usuarioRepository = usuarioRepository;
     }
 
-    // Configurações de autenticação
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(autenticacaoService).passwordEncoder(new BCryptPasswordEncoder());
-    }
-
-    // Configurações de recursos estáticos (js, css, imagens)
-    @Override
-    public void configure(WebSecurity web) throws Exception {}
-
-    // Configurações de autorização (URLs, perfis)
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeRequests()
             .antMatchers(HttpMethod.GET, "/topicos")
             .permitAll()
@@ -62,12 +48,25 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
                 new AutenticacaoViaTokenFilter(tokenService, usuarioRepository),
                 UsernamePasswordAuthenticationFilter.class
             );
+
+        return http.build();
     }
 
-    @Override
     @Bean
-    protected AuthenticationManager authenticationManager() throws Exception {
-        return super.authenticationManager();
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
+        return authConfig.getAuthenticationManager();
     }
 
 }
+
+// FONTES:
+//
+// https://spring.io/blog/2022/02/21/spring-security-without-the-websecurityconfigureradapter
+// https://stackoverflow.com/questions/72493425/how-to-update-deprecated-websecurityconfigureradapter-with-userdetailsservice-in
+// https://stackoverflow.com/questions/72381114/spring-security-upgrading-the-deprecated-websecurityconfigureradapter-in-spring
+// https://stackoverflow.com/questions/57020818/authenticationmanager-authenticates-gives-me-stackoverflowerror
