@@ -48,7 +48,7 @@ public class SecurityConfigurationsNew {
 
 } */
 
-// Sources:
+// FONTES:
 //
 // https://spring.io/blog/2022/02/21/spring-security-without-the-websecurityconfigureradapter
 // https://stackoverflow.com/questions/72493425/how-to-update-deprecated-websecurityconfigureradapter-with-userdetailsservice-in
