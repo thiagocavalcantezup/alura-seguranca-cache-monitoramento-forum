@@ -21,3 +21,8 @@ spring:
         '[format_sql]': true
     hibernate:
       ddl-auto: update
+
+forum:
+  jwt:
+    expiration-milliseconds: 86400000
+    secret: E6^D5rVtmQrzRvr9dU7e!vucUGZDyJ3NVQW636W$2a3^MR&5P!dQ8Ac7peW*WtiQDUqi^9RAmd5%WVa6!PKJeVWfiGzLEskc#MY4R*^Nb9Dwk^&5kTaoruGaVreTAuiB5xtTxSim!p@Xu$cmKAUbN#Yvjx6xmo&UVgkZhgYwKo3W%nMYP5AntHXZW!sfiS6zed$@E*rfhagGVDGXWw$EMKUJK64q9H8TRg@w55VLhq@my#nrrbE7dR8YPjPVcYxw
