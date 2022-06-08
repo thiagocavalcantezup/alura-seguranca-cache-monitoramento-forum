@@ -15,6 +15,11 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 @Configuration
 public class SecurityConfigurationsNew {
+    private final TokenService tokenService;
+
+    public SecurityConfigurationsNew(TokenService tokenService) {
+        this.tokenService = tokenService;
+    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -34,7 +39,8 @@ public class SecurityConfigurationsNew {
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
             .addFilterBefore(
-                new AutenticacaoViaTokenFilter(), UsernamePasswordAuthenticationFilter.class
+                new AutenticacaoViaTokenFilter(tokenService),
+                UsernamePasswordAuthenticationFilter.class
             );
 
         return http.build();

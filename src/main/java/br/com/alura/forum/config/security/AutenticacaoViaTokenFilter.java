@@ -11,11 +11,18 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 public class AutenticacaoViaTokenFilter extends OncePerRequestFilter {
 
+    private final TokenService tokenService;
+
+    public AutenticacaoViaTokenFilter(TokenService tokenService) {
+        this.tokenService = tokenService;
+    }
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
         String authToken = recuperarToken(request);
-        System.out.println(authToken);
+        boolean tokenValido = tokenService.isValido(authToken);
+        System.out.println(tokenValido);
 
         filterChain.doFilter(request, response);
     }
@@ -23,7 +30,8 @@ public class AutenticacaoViaTokenFilter extends OncePerRequestFilter {
     private String recuperarToken(HttpServletRequest request) {
         String authToken = request.getHeader("Authorization");
 
-        if (authToken == null || authToken.isEmpty() || !authToken.startsWith("Bearer")) {
+        if (authToken == null || authToken.isEmpty() || !authToken.startsWith("Bearer")
+                || authToken.length() <= 7) {
             return null;
         }
 
