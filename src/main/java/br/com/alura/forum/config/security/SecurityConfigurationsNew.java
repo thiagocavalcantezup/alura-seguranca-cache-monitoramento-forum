@@ -20,10 +20,15 @@ public class SecurityConfigurationsNew {
             .permitAll()
             .antMatchers(HttpMethod.GET, "/topicos/*")
             .permitAll()
+            .antMatchers(HttpMethod.POST, "/auth")
+            .permitAll()
             .anyRequest()
             .authenticated()
             .and()
-            .formLogin();
+            .csrf()
+            .disable()
+            .sessionManagement()
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         return http.build();
     }
